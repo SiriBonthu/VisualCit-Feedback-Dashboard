@@ -1,0 +1,120 @@
+.form-group {
+            margin-bottom: 10px; /* Adjust the value as needed */
+        }
+
+header {
+    background-color: #b3b3db;
+    color: black;
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    position: fixed; /* Make the header fixed */
+    top: 0; /* Position it at the top of the viewport */
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    border-top-left-radius: 20px; /* Add rounded corners to the top left */
+    border-top-right-radius: 20px;
+}
+
+/* Style for the logo */
+.visual-cit img {
+    width: 100px;
+    height: auto;
+}
+
+/* Style for the site title (heading) */
+.site-title {
+    font-size: 24px;
+    margin: 0; /* Remove default margin */
+    display: flex; /* Enable flex layout for the site title */
+    align-items: center; /* Align items vertically within the site title */
+}
+.logo-left img {
+    width: 200px;
+    height: auto;
+}
+.logo-right{
+display: flex;
+justify-content: center;
+align-items:center;
+}
+.logo-right img {
+    width: 200px;
+    height: auto;
+    margin-right: 10px;
+}
+.site-logo {
+    width: 100px; /* Reduce the width of the logo */
+    height: auto;
+    margin-right: 10px; /* Add some spacing between the logo and text */
+}
+body {
+    padding-top: 70px; /* Adjust the value to match the header height */
+}
+
+.vertical-navbar {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    width: 10%; /* Set to 20% to take up the left side */
+    background-color: #b3b3db;
+    color: #fff;
+    height: 100%;
+    overflow-y: auto;
+    height: calc(100% - 60px);
+    border-top-right-radius: 20px; /* Add rounded corners to the top right */
+    border-bottom-right-radius: 20px;
+}
+main {
+    margin-left: 10%; /* Ensure content is not covered by the navbar */
+    padding: 20px;
+    width: 90%; /* Set to 80% to take up the right side */
+    box-sizing: border-box; /* Include padding and border in width */
+}
+
+/* Style for the navigation list items */
+.vertical-navbar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.vertical-navbar a {
+    text-decoration: none;
+    display: block;
+    font-size: 18px;
+    color: #000;
+    margin-left:10px;
+}
+
+/* Highlight the active menu item */
+.vertical-navbar a.active {
+    background-color: #555;
+}
+
+.vertical-navbar li {
+    padding: 10px 0;
+    margin-bottom: 5px;
+}
+
+.vertical-navbar i {
+    margin-right: 10px; /* Add space between icon and text */
+}
+
+.image-scroll-container {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    margin: 30px 10px;
+}
+
+.image-list {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.image-list img {
+    max-width: 100px; /* Adjust the max width as needed */
+    margin-right: 10px; /* Add spacing between images */
+    max-height:100px;
+}

@@ -1,0 +1,37 @@
+    {% extends "feedback_dashboard/index.html" %}
+	{% block content %}
+	<h2>Upload Data for Visualization</h2>
+	<p>Upload the annotation CSV file and pipeline configuration json file</p>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="file_type">Select File Type:</label>
+            <select id="file_type" name="file_type">
+                <option value="annotations">Annotation File</option>
+                <option value="configuration">Configuration File</option>
+            </select>
+        </div>
+        <br>
+        <div class="form-group">
+            <input type="file" name="csv_file" id="csvFileInput">
+            <button type="submit">Upload</button>
+        </div>
+    </form>
+	{% if uploaded_files %}
+		<h2>Uploaded File Details:</h2>
+		{% for file_type, file_name in uploaded_files.items %}
+		<p><strong>{{file_type}}:</strong> {{file_name}}</p>
+		{% endfor %}
+		<div class="image-scroll-container">
+			<div class="image-list">
+				{% for image_url in image_urls %}
+					<img src="{{ image_url }}" alt="Image">
+				{% endfor %}
+			</div>
+		</div>
+		<form method="post" action="{% url 'reset' %}">
+			{% csrf_token %}
+			<button type="submit">Reset Data</button>
+		</form>
+	{% endif %}
+	{% endblock%}

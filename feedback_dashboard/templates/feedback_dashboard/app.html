@@ -1,0 +1,19 @@
+{% extends "feedback_dashboard/index.html" %}
+{% block content %}
+     {%load plotly_dash%}
+    <div>
+    {%plotly_app name="ParetoGrid" ratio=1.1%}
+    </div>
+	<div>
+    {%plotly_app name="3D-App" ratio=0.5%}
+    </div>
+     <div>
+    {%plotly_app name="PR_App" ratio=1%}
+     </div>
+ 	<div>
+    {%plotly_app name="RR_App" ratio=1.3%}
+     </div>
+	<div>
+    {%plotly_app name="Time_App" ratio=1.4%}
+     </div>
+{% endblock%}

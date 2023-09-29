@@ -1,0 +1,36 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	{% load static %}
+	<script src="{% static 'js/home.js' %}"></script>
+    <title>Feedback Dashboard</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<header>
+        <div class="logo-left">
+            <img src="{% static 'images/Crowd4SDG.png' %}" alt="Left Logo">
+        </div>
+         <h1 class="site-title">
+            <img src="{% static 'images/VisualCit.png'%}" alt="Company Logo" class="site-logo"> Feedback Dashboard
+        </h1>
+        <div class="logo-right">
+            <img src="{% static 'images/Logo_polimi.png'%}" alt="Right Logo">
+        </div>
+    </header>
+    <nav class="vertical-navbar">
+        <ul>
+            <li><a href="{% url 'home' %}" id="home"><i class="fas fa-home"></i>Home</a></li>
+            <li><a href="{% url 'dashboard' %}" id="dashboard"><i class="fas fa-chart-bar"></i>Dashboard</a></li>
+            <li><a href="#" id="help"><i class="fas fa-question-circle"></i>Help</a></li>
+        </ul>
+    </nav>
+    <main>
+ 	{% block content %}{% endblock %}
+    </main>
+</body>
+</html>
