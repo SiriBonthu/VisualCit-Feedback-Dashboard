@@ -73,6 +73,10 @@ main {
     box-sizing: border-box; /* Include padding and border in width */
 }
 
+.blue-paragraph {
+    color: blue; /* Set the text color to blue */
+}
+
 /* Style for the navigation list items */
 .vertical-navbar ul {
     list-style-type: none;
@@ -118,3 +122,53 @@ main {
     margin-right: 10px; /* Add spacing between images */
     max-height:100px;
 }
+
+ .button-container {
+    display: flex;
+    justify-content: center; /* Horizontally center the buttons */
+ }
+
+.button-container button {
+    margin: 0 10px; /* Add some spacing between buttons */
+ }
+
+.home-button{
+    background-color: #b3b3db; /* Use your desired color code or name */
+    color: #000; /* Text color for the button */
+    border: none; /* Remove button borders */
+    padding: 10px 20px; /* Add padding for better appearance */
+    cursor: pointer; /* Add a pointer cursor on hover */
+    border-radius: 5px; /* Add rounded edges */
+    margin-right: 10px;
+}
+
+ button[disabled] {
+background-color: #ccc; /* Change the background color to a light gray */
+color: #666; /* Change the text color to a darker gray */
+cursor: not-allowed; /* Change the cursor to not-allowed */
+}
+
+ .loading-text {
+    display: none;
+    padding:10px /* Add some spacing between the button and text */
+    color: #007bff;
+}
+
+/* Style for the Font Awesome download icon */
+.download-icon {
+    display: none;
+    color: #007bff; /* Set the icon color to match the button */
+    cursor: pointer;
+    padding:10px /* Add some spacing between the button and icon */
+}
+
+.file-format-info, .error-info{
+color:red;
+}
+
+.error-info{
+margin-left:"10px"
+}
+
+
+

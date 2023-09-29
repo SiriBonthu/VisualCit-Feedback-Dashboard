@@ -11,4 +11,5 @@ urlpatterns = [
     path('django_plotly_dash/', include('django_plotly_dash.urls')),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('reset/', views.reset, name='reset'),
+    path('generate/', views.generateCsv, name='generate'),
 ]
