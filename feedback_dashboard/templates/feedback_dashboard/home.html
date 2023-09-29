@@ -1,26 +1,27 @@
     {% extends "feedback_dashboard/index.html" %}
 	{% block content %}
 	<h2>Upload Data for Visualization</h2>
-	<p>Upload the annotation CSV file and pipeline configuration json file</p>
+	<p class="blue-paragraph">Upload both the annotation file and the configuration file</p>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
-            <label for="file_type">Select File Type:</label>
-            <select id="file_type" name="file_type">
-                <option value="annotations">Annotation File</option>
-                <option value="configuration">Configuration File</option>
-            </select>
+            <label>Select File Type:</label>
+			<input type="radio" id="annotations_radio" name="file_type" value="annotations" checked>
+			<label for="annotations_radio">Annotation File</label>
+			<input type="radio" id="configuration_radio" name="file_type" value="configuration">
+			<label for="configuration_radio">Configuration File</label>
         </div>
         <br>
         <div class="form-group">
-            <input type="file" name="csv_file" id="csvFileInput">
-            <button type="submit">Upload</button>
+            <input type="file" name="input_file" id="fileInput">
+            <button type="submit" class="home-button" id="uploadButton" disabled>Upload</button><span class="error-info">{{error_msg}}</span>
+			<p class="file-format-info">Supported file formats: CSV (.csv)</p>
         </div>
     </form>
 	{% if uploaded_files %}
 		<h2>Uploaded File Details:</h2>
 		{% for file_type, file_name in uploaded_files.items %}
-		<p><strong>{{file_type}}:</strong> {{file_name}}</p>
+		<p><strong>{{file_type}}:</strong> <span style="color: blue;">{{file_name}}</span></p>
 		{% endfor %}
 		<div class="image-scroll-container">
 			<div class="image-list">
@@ -29,9 +30,18 @@
 				{% endfor %}
 			</div>
 		</div>
+	<div class="button-container">
 		<form method="post" action="{% url 'reset' %}">
 			{% csrf_token %}
-			<button type="submit">Reset Data</button>
+			<button class="home-button" type="submit">Reset Data</button>
 		</form>
+<!--		<form method="post" action="{% url 'reset' %}">-->
+<!--		{% csrf_token %}-->
+		<button class="home-button" id="generate_button" type="submit" {% if not both_files_uploaded %}disabled{% endif %} >
+			Generate Dashboard CSV File </button>
+		<span id="load" class="loading-text">Loading...</span> <!-- Loading text -->
+		<span id="download" class="download-icon fa fa-download"></span> <!-- Download icon -->
+<!--		</form>-->
+	</div>
 	{% endif %}
 	{% endblock%}
