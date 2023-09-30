@@ -8,7 +8,11 @@ from .rr_app import RR_app
 from .time_app import Time_app
 import os
 import csv
-from django.http import HttpResponse
+import json
+import pandas as pd
+import requests
+from django.http import HttpResponse, JsonResponse
+from io import StringIO
 
 # Create your views here.
 
@@ -34,7 +38,7 @@ def home(request):
                 csv_data = input_file.read().decode('utf-8')
                 csv_reader = csv.DictReader(csv_data.splitlines())
                 for row in csv_reader:
-                    image_url = row.get('url', '')
+                    image_url = row.get('media_url', '')
                     if image_url:
                         image_urls.append(image_url)
                 request.session['image_urls'] = image_urls
@@ -73,8 +77,54 @@ def reset(request):
 
 def generateCsv(request):
     print("in download")
-    #content = {"result": order_id, "accessToken": access_token}
-    return HttpResponse("Success")
+    address = '131.175.120.2:7779'
+    component_names = []
+    results = {}
+    try:
+        config_file_path = os.path.join(settings.MEDIA_ROOT,"configuration", request.session['uploaded_files']['configuration'])
+        with open(config_file_path, 'r') as file:
+            json_text = file.read()
+            mapping = json.loads(json_text)
+            print(mapping)
+        annotation_file_path = os.path.join(settings.MEDIA_ROOT,"annotations", request.session['uploaded_files']['annotations'])
+        print(annotation_file_path)
+        input_data = open(annotation_file_path, 'r').read()
+        for action in mapping['actions']:
+            action["confidence"] = 0.0
+            component_names.append(action["name"])
+            params = {'actions': [
+                action
+            ],
+
+                'column_name': 'media_url',
+                'csv_file': input_data
+            }
+
+            print(params["actions"])
+            action_name = action["name"]
+            r = requests.post(url=f'http://{address}/Action/API/FilterCSV', json=params)
+            if r.status_code == 200:
+                results[action_name] = pd.read_csv(StringIO(r.text))
+                print("OK")
+            else:
+                print("NOT OK")
+                raise ValueError(f"API request failed with status code {r.status_code}")
+        output_df = pd.read_csv(annotation_file_path)
+        for comp in component_names:
+            temp = results[comp][["id", comp, comp + "_execution_time"]]
+            output_df = output_df.merge(temp, on="id", how="left")
+        output_folder_path = os.path.join(settings.MEDIA_ROOT, "webservice_output")
+        if not os.path.exists(output_folder_path):
+            os.makedirs(output_folder_path)
+        output_df.to_csv(output_folder_path+"/dashboard_input.csv", index=False)
+    except json.JSONDecodeError as e:
+        return JsonResponse({"error": f"Invalid Json File: {str(e)}"}, status=400)
+    except ValueError as e:
+        return JsonResponse({"error": {str(e)}}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": f"Invalid File: {str(e)}"}, status=500)
+
+    return JsonResponse({"message": "Successful"}, status=200)
 
 def dashboard(request):
     return render(request, "feedback_dashboard/app.html")

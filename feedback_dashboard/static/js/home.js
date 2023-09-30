@@ -5,6 +5,7 @@ $(document).ready(function() {
         $(this).prop("disabled", true);
 
         // Show the loading text
+        $(".loading-text").text("Loading...");
         $(".loading-text").show();
         $.ajax({
         type: 'GET',
@@ -14,12 +15,17 @@ $(document).ready(function() {
                 console.log(data);
                 $(".loading-text").hide();
                 $(".download-icon").show();
-          }
+          },
+        error: function(jqXHR) {
+             console.log("error")
+             var errorResponse = JSON.parse(jqXHR.responseText);
+             $(".loading-text").text(errorResponse.error);
+        }
         })
     });
 
     $("#download").click(function() {
-        var csvFileUrl = '/media/webservice_output_new/Photo.csv';
+        var csvFileUrl = '/media/webservice_output/dashboard_input.csv';
          window.location.href = csvFileUrl;
      });
 

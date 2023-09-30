@@ -162,7 +162,7 @@ cursor: not-allowed; /* Change the cursor to not-allowed */
     padding:10px /* Add some spacing between the button and icon */
 }
 
-.file-format-info, .error-info{
+.file-format-info, .error-info, .loading-text{
 color:red;
 }
 
