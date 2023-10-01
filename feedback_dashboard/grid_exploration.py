@@ -109,6 +109,21 @@ def format_slider_value(value):
     return f'{value:.1f}'
 
 
+def distance_to_edge(point, edge_start, edge_end):
+    edge_vector = edge_end - edge_start
+    point_vector = point - edge_start
+    edge_length = np.linalg.norm(edge_vector)
+    edge_direction = edge_vector / edge_length
+    projection = np.dot(point_vector, edge_direction)
+
+    if projection <= 0:
+        return np.linalg.norm(point - edge_start)  # Closest to edge start
+    elif projection >= edge_length:
+        return np.linalg.norm(point - edge_end)  # Closest to edge end
+    else:
+        perpendicular_vector = point_vector - projection * edge_direction
+        return np.linalg.norm(perpendicular_vector)
+
 pareto_grid_app.layout = html.Div([
     html.H3('Confidence grid search for precision, recall and reduction rate'),
     html.Div(
@@ -167,21 +182,11 @@ pareto_grid_app.layout = html.Div([
     Output("scatter-plot", "figure"),
     Output("graph2", "figure"),
     Output("graph3", "figure"),
+    Output('message', 'children'),
     Input('reduction-rate-slider', 'value'),
     Input('distance-slider', 'value'),
-    [State(f'{component}-input', 'value') for component in components])
+    [Input(f'{component}-input', 'value') for component in components])
 def plotGraph(rr, dist, *threshold_values):
-    # initial configuration threshold and color by reduction rate constraint
-    # ctx = app.callback_context
-    # rr_changed = False
-    # dist_changed = False
-    # if ctx.triggered:
-    #   for trigger in ctx.triggered:
-    #     prop_id = trigger['prop_id']
-    #     if prop_id == 'reduction-rate-slider.value':
-    #       rr_changed = True
-    #     elif prop_id == 'distance-slider.value':
-    #       dist_changed = True
     rr = round(rr, 2)
     data = gdata.copy()
     data['thres'] = data['thres'].apply(lambda tpl: tuple(round(val, 2) for val in tpl))
@@ -246,36 +251,39 @@ def plotGraph(rr, dist, *threshold_values):
         font=dict(size=14),
     )
 
-    distances = distance.cdist(pp[['prec', 'rec']], hull_vertices)
-    min_distances = np.min(distances, axis=1)
-    pp = pp[min_distances <= dist]
+    # distances = distance.cdist(pp[['prec', 'rec']], hull_vertices)
+    # min_distances = np.min(distances, axis=1)
+    # pp = pp[min_distances <= dist]
+    min_distances = []
+    for point in pp[['prec', 'rec']].values:
+        # Initialize a list to store distances from edges for this point
+        distances_to_edges = []
+
+        # Loop through the edges of the convex hull
+        for i in range(len(hull.vertices)):
+            start_vertex = hull_vertices[i]
+            end_vertex = hull_vertices[(i + 1) % len(hull.vertices)]  # Wrap around for the last edge
+
+            # Calculate the distance from the point to the current edge
+            dist_to_edge = distance_to_edge(point, start_vertex, end_vertex)
+            distances_to_edges.append(dist_to_edge)
+
+        # Find the minimum distance from all edges for this point
+        min_distance_to_edges = min(distances_to_edges)
+
+        # Append the minimum distance to the min_distances array
+        min_distances.append(min_distance_to_edges)
+
+    pp = pp[np.array(min_distances) <= dist]
     fig3 = px.parallel_coordinates(pp, color='surv', color_continuous_scale="sunset",
                                    title='points close to the boundary')
     fig3.update_layout(
         font=dict(size=14),
     )
-    return fig, fig2, fig3
+    message = tuple(round(x, 2) for x in key[armin])
+    formatted_message= ', '.join(map(str, message))
 
-
-@pareto_grid_app.callback(
-    Output('message', 'children'),
-    Output("scatter-plot", "figure", allow_duplicate=True),
-    Input('scatter-plot', "figure"),
-    [Input(f'{component}-input', 'value') for component in components],
-    prevent_initial_call=True)
-def handle_submit(fig_json,*threshold_values):
-    fig = go.Figure(fig_json)
-    if any(value is None or value == '' for value in threshold_values):
-        return "Please fill in all input fields correctly (0-1)", fig
-    armin = getNearestConfigThreshold(threshold_values)
-    fig.update_traces(
-        x=[prec[armin]],
-        y=[rec[armin]],
-        selector=dict(name='Selected Configuration'),  # Replace with the name of your existing trace
-    )
-    results = tuple(round(x, 2) for x in key[armin])
-    formatted_results = ', '.join(map(str, results))
-    return html.Div("Nearest Configuration: " + formatted_results), fig
+    return fig, fig2, fig3,html.Div("Nearest Configuration: "+ formatted_message)
 
 
 #app.run_server(mode="inline")

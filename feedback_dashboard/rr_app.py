@@ -81,6 +81,14 @@ def getRR(count, n):
     rr = [round(1 - (value / count[i - 1]) if i > 0 else 1 - (value / n), 2) for i, value in enumerate(count)]
     return rr
 
+def getCumRR(count,n):
+  cum_rr=[]
+  cum_rr= [round(value/n,2) for value in count]
+  rr=[cum_rr[0]]
+  for i in range(1, len(cum_rr)):
+    rr.append(cum_rr[i] - cum_rr[i-1])
+  return rr
+
 
 def getCumulativeReducedImages(count, n):
     cc = []
@@ -166,15 +174,16 @@ def display_selected_configuration(selected_config, *threshold_values):
         component_list = ', '.join(component_names)
         value_list = [thresholds[key] for key in component_names]
         line_data[config] = getOutputImageCount(config, value_list)
-        bar_data[config] = getRR(line_data[config], nValidImages)
+        #bar_data[config] = getRR(line_data[config], nValidImages)
         cum_sum = getCumulativeReducedImages(line_data[config], nValidImages)
+        bar_data[config] = getCumRR(cum_sum, nValidImages)
         line_fig.add_trace(go.Scatter(x=comp_list, y=cum_sum, mode='lines+markers', name=config,
                                       customdata=component_names,
                                       hovertemplate="Cumulative Sum: %{y}<br>Comp: %{customdata}<extra></extra>"))
         line_fig.update_layout(
             title='Reduction of images in different configurations',
             xaxis_title='Components',
-            yaxis_title='Cummulative Images Reduced', )
+            yaxis_title='Cummulative Sum of Images Reduced', )
 
     # create bar graph
     bar_df = pd.DataFrame(bar_data).transpose()
@@ -207,8 +216,8 @@ def display_selected_configuration(selected_config, *threshold_values):
     value_list = [thresholds[key] for key in component_names]
     data = pd.DataFrame()
     data['component'] = ["input"] + component_names
-    data['output'] = [nValidImages] + getOutputImageCount(selected_config, value_list)
-    fig = px.line(data, x="component", y="output")
+    data['output_images'] = [nValidImages] + getOutputImageCount(selected_config, value_list)
+    fig = px.line(data, x="component", y="output_images")
     fig.update_layout(title='filtered output images by each component',
                       xaxis_title='component',
                       yaxis_title='output image count')
