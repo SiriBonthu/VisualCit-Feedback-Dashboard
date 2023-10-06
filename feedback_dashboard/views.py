@@ -73,7 +73,7 @@ def reset(request):
         if os.path.exists(file_path):
             os.remove(file_path)
     request.session.clear()
-    return redirect('home')
+    return redirect('/')
 
 def generateCsv(request):
     print("in download")

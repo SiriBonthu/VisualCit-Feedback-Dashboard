@@ -7,7 +7,7 @@ from .time_app import Time_app
 from . import views
 
 urlpatterns = [
-    path("home", views.home, name="home"),
+    path("", views.home, name="home"),
     path('django_plotly_dash/', include('django_plotly_dash.urls')),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('reset/', views.reset, name='reset'),
