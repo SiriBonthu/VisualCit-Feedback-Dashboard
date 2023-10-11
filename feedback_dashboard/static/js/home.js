@@ -39,6 +39,16 @@ $(document).ready(function() {
         }
     });
 
+    const fileInput2 = $("#dashboardFileInput");
+     const uploadButton2 = $("#dashboardUploadButton");
+     fileInput2.change(function() {
+        if (fileInput2[0].files.length > 0) {
+            uploadButton2.prop("disabled", false);
+        } else {
+            uploadButton2.prop("disabled", true);
+        }
+    });
+
     function updateFileFormatInfo() {
                 var fileFormatInfo = $(".file-format-info");
                 var annotationsRadio = $("#annotations_radio");

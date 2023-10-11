@@ -126,5 +126,19 @@ def generateCsv(request):
 
     return JsonResponse({"message": "Successful"}, status=200)
 
-def dashboard(request):
+def show_graphs(request):
+    if request.method == 'POST':
+        input_file = request.FILES['dashboard_input_file']
+        file_path = os.path.join(settings.MEDIA_ROOT, "dashboard_input", "dashboard_input.csv")
+        try:
+            if not input_file.name.endswith(".csv"):
+                raise ValueError("File extension for input file must be .csv")
+            with open(file_path, 'wb') as destination:
+                for chunk in input_file.chunks():
+                    destination.write(chunk)
+        except Exception as e:
+            return render(request, "feedback_dashboard/dashboard.html",{'error_msg':str(e)})
     return render(request, "feedback_dashboard/app.html")
+
+def dashboard(request):
+    return render(request, "feedback_dashboard/dashboard.html")

@@ -1,0 +1,13 @@
+{% extends "feedback_dashboard/index.html" %}
+{% block content %}
+<h2>Visualizations</h2>
+<p class="blue-paragraph">Upload the generated csv file to create visualizations</p>
+<form method="post" enctype="multipart/form-data" action="{% url 'show_graphs' %}">
+	{% csrf_token %}
+	<div class="form-group">
+		<input type="file" name="dashboard_input_file" id="dashboardFileInput">
+		<button type="submit" class="home-button" id="dashboardUploadButton" disabled>Upload</button><span class="error-info">{{error_msg}}</span>
+		<p class="file-format-info">Supported file formats: CSV (.csv)</p>
+	</div>
+</form>
+{% endblock%}
