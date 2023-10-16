@@ -2,38 +2,34 @@ import pandas as pd
 import os
 import numpy as np
 import plotly.express as px
-from sklearn.metrics import precision_recall_curve, auc, confusion_matrix, roc_curve, precision_recall_fscore_support
-from sklearn.metrics import precision_score, recall_score, accuracy_score
-from sklearn.datasets import make_classification
 from dash import html, dcc, Dash, Patch, no_update
 from dash.dependencies import Input, Output, State
-from dash.exceptions import PreventUpdate
-from pandas.io.formats import style
 import plotly.graph_objects as go
-import requests
-from io import StringIO
 from itertools import product, permutations
 from django.conf import settings
 from django_plotly_dash import DjangoDash
+import json
 
 output_folder_path = os.path.join(settings.MEDIA_ROOT, 'outputs')
 new_folder_path = os.path.join(settings.MEDIA_ROOT, 'webservice_output_new')
 
-input_data_path = os.path.join(settings.MEDIA_ROOT, 'input/input_data.csv')
+#input_data_path = os.path.join(settings.MEDIA_ROOT, 'input/input_data.csv')
+input_data_path = os.path.join(settings.MEDIA_ROOT, 'dashboard_input/dashboard_input.csv')
+input_configuration_path = os.path.join(settings.MEDIA_ROOT, 'dashboard_input/configuration.txt')
+f=open(input_configuration_path)
+input_configuration = json.load(f)
+components = []
+for action in input_configuration['actions']:
+    components.append(action["display_name"])
 input = pd.read_csv(input_data_path)
-components = ["PublicPlace", "Photo", "TwoPersons"]
 annotations = {}
 output = {}
 merged = {}
-for comp in components:
-    path = os.path.join(settings.MEDIA_ROOT, 'annotations', comp + "_annotations.csv")
-    annotations[comp] = pd.read_csv(path)
-    output[comp] = pd.read_csv(new_folder_path + "/" + comp + ".csv")
-    merged[comp] = pd.merge(annotations[comp], output[comp], on="id", how="left")
-    merged[comp]['agreement'] = merged[comp]["positive_answers"] / merged[comp]["answers"]
-    merged[comp][comp].fillna(0, inplace=True)
-    merged[comp]['truth'] = np.where(merged[comp]['agreement'] >= 0.66, True, False)
 
+for comp in components:
+    merged[comp]=input[["id",comp,comp+"_execution_time"]]
+    merged[comp]['truth']= input[comp+"_truth"].astype(bool)
+    merged[comp].dropna(inplace=True)
 
 def format_slider_value(value):
     return f'{value:.1f}'

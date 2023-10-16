@@ -15,23 +15,33 @@ from scipy.spatial import ConvexHull, distance
 from itertools import product
 from django.conf import settings
 from django_plotly_dash import DjangoDash
+import json
 
-input_data_path = os.path.join(settings.MEDIA_ROOT, 'input/input_data.csv')
-input_data = open(input_data_path, 'r').read()
+
 folder_path = os.path.join(settings.MEDIA_ROOT, 'webservice_output_new')
-components = ["PublicPlace", "Photo", "TwoPersons"]
 results = {}
+input_data_path = os.path.join(settings.MEDIA_ROOT, 'dashboard_input/dashboard_input.csv')
+input_configuration_path = os.path.join(settings.MEDIA_ROOT, 'dashboard_input/configuration.txt')
+f=open(input_configuration_path)
+input_configuration = json.load(f)
+components = []
+for action in input_configuration['actions']:
+    components.append(action["display_name"])
+print(components)
+input_data=pd.read_csv(input_data_path)
+input_data.dropna(inplace = True)
 for comp in components:
-    results[comp] = pd.read_csv(folder_path + "/" + comp + ".csv")
-    results[comp] = results[comp][["id", comp + "_execution_time"]]
+    results[comp] = input_data[["id", comp + "_execution_time"]]
+agreed = pd.DataFrame()
+agreed["id"] = input_data["id"]
+agreed["truth"] = True
+for comp in components:
+    agreed["truth"] = (input_data[comp + "_truth"].astype(bool)) & (agreed["truth"])
+confidences_merged = pd.DataFrame()
+confidences_merged["id"] = input_data["id"]
+for comp in components:
+    confidences_merged[comp] = input_data[comp]
 
-confidences_merged = pd.read_csv(os.path.join(settings.MEDIA_ROOT, 'input/merged.csv'))
-agreed = pd.read_csv(os.path.join(settings.MEDIA_ROOT, 'input/agreed.csv'))
-confidences_merged = confidences_merged.rename(
-    columns={"YOLOv5ObjectDetector": "TwoPersons", "MemeClassifier": "Photo", "SceneClassifier": "PublicPlace"})
-confidences_merged.columns
-for comp in components:
-    confidences_merged = confidences_merged.merge(results[comp], on="id", how="left")
 
 np.random.seed(0)
 values = 20

@@ -13,4 +13,5 @@ urlpatterns = [
     path('reset/', views.reset, name='reset'),
     path('generate/', views.generateCsv, name='generate'),
     path('showGraphs/', views.show_graphs, name='show_graphs'),
+    path('resetDashboard/', views.reset_dashboard, name='reset_dashboard'),
 ]

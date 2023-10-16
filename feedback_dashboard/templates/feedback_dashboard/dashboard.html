@@ -2,12 +2,37 @@
 {% block content %}
 <h2>Visualizations</h2>
 <p class="blue-paragraph">Upload the generated csv file to create visualizations</p>
-<form method="post" enctype="multipart/form-data" action="{% url 'show_graphs' %}">
+<form method="post" enctype="multipart/form-data" action="{% url 'dashboard' %}">
 	{% csrf_token %}
+	 <div class="form-group">
+            <label>Select File Type:</label>
+			<input type="radio" id="data_radio" name="file_type" value="data" checked>
+			<label for="data_radio">Input Data File</label>
+			<input type="radio" id="config_radio" name="file_type" value="configuration">
+			<label for="config_radio">Configuration File</label>
+        </div>
+        <br>
 	<div class="form-group">
 		<input type="file" name="dashboard_input_file" id="dashboardFileInput">
 		<button type="submit" class="home-button" id="dashboardUploadButton" disabled>Upload</button><span class="error-info">{{error_msg}}</span>
 		<p class="file-format-info">Supported file formats: CSV (.csv)</p>
 	</div>
 </form>
+{% if dashboard_files %}
+		<h2>Uploaded File Details:</h2>
+		{% for file_type, file_name in dashboard_files.items %}
+		<p><strong>{{file_type}}:</strong> <span style="color: blue;">{{file_name}}</span></p>
+		{% endfor %}
+	<div class="button-container">
+		<form method="post" action="{% url 'reset_dashboard' %}">
+			{% csrf_token %}
+			<button class="home-button" type="submit">Reset Data</button>
+		</form>
+		<form method="post" action="{% url 'show_graphs' %}">
+			{% csrf_token %}
+			<button class="home-button" id="graphs_button" type="submit" {% if not both_files_uploaded %}disabled{% endif %} >
+				Generate Visualizations </button>
+		</form>
+	</div>
+{% endif %}
 {% endblock%}
