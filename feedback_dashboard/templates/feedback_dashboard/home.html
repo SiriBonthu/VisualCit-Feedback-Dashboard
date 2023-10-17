@@ -1,7 +1,9 @@
     {% extends "feedback_dashboard/index.html" %}
 	{% block content %}
-	<h2>Upload Data for Visualization</h2>
-	<p class="blue-paragraph">Upload both the annotation file and the configuration file</p>
+	<h2 class="heading">Generate Data for Visualization</h2>
+	<div class="main-content">
+		<div class="form-div">
+			<p>Upload both the annotation file and the configuration file</p>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
@@ -14,15 +16,21 @@
         <br>
         <div class="form-group">
             <input type="file" name="input_file" id="fileInput">
-            <button type="submit" class="home-button" id="uploadButton" disabled>Upload</button><span class="error-info">{{error_msg}}</span>
+            <button type="submit" class="home-button" id="uploadButton" disabled>Upload</button>
+			<p class="error-info">{{error_msg}}</p>
 			<p class="file-format-info">Supported file formats: CSV (.csv)</p>
         </div>
     </form>
+			</div>
+		<div class="uploaded-data">
 	{% if uploaded_files %}
-		<h2>Uploaded File Details:</h2>
+		<p class="uploaded-files"><strong>Uploaded File Details:</strong></p>
 		{% for file_type, file_name in uploaded_files.items %}
-		<p><strong>{{file_type}}:</strong> <span style="color: blue;">{{file_name}}</span></p>
+
+		<p>{{file_type}}:<span style="color: #5454d3;">{{file_name}}</span></p>
 		{% endfor %}
+		</div>
+	</div>
 		<div class="image-scroll-container">
 			<div class="image-list">
 				{% for image_url in image_urls %}
