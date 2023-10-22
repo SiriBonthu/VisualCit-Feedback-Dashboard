@@ -1,0 +1,31 @@
+{
+  "actions": [
+    {
+      "confidence": "0.90",
+      "min_items": "1",
+      "name": "SceneClassifier",
+      "object": "public",
+	"display_name":"PublicPlace"
+    },
+    {
+      "confidence": "0.90",
+      "min_items": "1",
+      "name": "MemeClassifier",
+	"display_name":"Photo"
+    },
+    {
+      "confidence": "0.90",
+      "min_items": "2",
+      "name": "YOLOv5ObjectDetector",
+      "object": "person",
+	"display_name": "TwoPersons"
+    }
+  ],
+  "column_name": "media_url",
+  "count": "...",
+  "csv_file": "...",
+  "query": "floods",
+  "source": "Reddit",
+  "subreddit": "all",
+  "url": "http://131.175.120.2:7779/Crawler/API/CrawlAndFilter"
+}
