@@ -3,8 +3,8 @@ import csv
 from django.shortcuts import render, redirect
 from django.conf import settings
 from .dash_app import PR_app
-from .grid_exploration import pareto_grid_app, three_d_app
-from .rr_app import RR_app
+from .grid_exploration import pareto_grid_app, three_d_app, getGlobalConfidences
+from .rr_app import RR_app, getGlobalConfig
 from .time_app import Time_app
 import os
 import csv
@@ -169,14 +169,38 @@ def dashboard(request):
         return render(request, "feedback_dashboard/dashboard.html",{'dashboard_files': request.session['dashboard_files'], "both_files_uploaded":both_files_uploaded})
     both_files_uploaded = 'data' in dashboard_files and 'configuration' in dashboard_files
     return render(request, "feedback_dashboard/dashboard.html",{'dashboard_files':dashboard_files,"both_files_uploaded":both_files_uploaded})
+
 def reset_dashboard(request):
     request.session['dashboard_files']={}
     return render(request, "feedback_dashboard/dashboard.html")
 
-# def dashboard(request):
-#     return render(request, "feedback_dashboard/dashboard.html")
-
 def show_graphs(request):
-    dash_context = request.session.get('django_plotly_dash', {})
-    print(dash_context)
     return render(request, "feedback_dashboard/app.html")
+
+def download_configuration(request):
+    try:
+        input_configuration_path = os.path.join(settings.MEDIA_ROOT, 'dashboard_input/configuration.txt')
+        f = open(input_configuration_path)
+        input_configuration = json.load(f)
+        temp_actions= input_configuration["actions"]
+        confidences = getGlobalConfidences()
+        config=getGlobalConfig()
+        for i in range(len(temp_actions)):
+            temp_actions[i]["confidence"]= confidences[i]
+        order_actions = []
+        for comp in config:
+            for action in temp_actions:
+                if action["display_name"] == comp:
+                    order_actions.append(action)
+
+        input_configuration["actions"]=order_actions
+        json_data = json.dumps(input_configuration, indent=4)
+        response = HttpResponse(json_data, content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="configuration.json"'
+        return response
+
+    except Exception as e:
+        return render(request, "feedback_dashboard/app.html", {'error_msg': str(e)})
+
+
+
