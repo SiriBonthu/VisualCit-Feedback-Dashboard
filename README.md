@@ -24,3 +24,5 @@ python manage.py runserver
 
 #### Access the dashboard
 http://127.0.0.1:8000/
+
+#### The sample input and output files are present in the media folder
